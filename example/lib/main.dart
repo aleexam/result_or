@@ -53,7 +53,7 @@ void main() async {
     print(result4.error.message);
   }
 
-  // Using extensionsd
+  // Using extensions
   someFunction.resultOr(
       onSuccess: (data) {
         print(data);
