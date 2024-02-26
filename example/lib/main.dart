@@ -6,8 +6,8 @@ void main() async {
   /// With ResultOr simply call your functions in bloc/store/etc, or anywhere else, wrapped in ResultOr.
   /// Get result data or error.
 
-  // Simple function example
   var result = ResultOr.from(someFunction);
+  // var result = someFunction.resultOr();
 
   if (result case ResultData())  {
     print(result.data);
