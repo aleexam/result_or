@@ -9,9 +9,9 @@ void main() async {
   // Simple function example
   var result = ResultOr.from(someFunction);
 
-  if (result case ResultWithData())  {
+  if (result case ResultData())  {
     print(result.data);
-  } else if (result case ResultWithError()) {
+  } else if (result case ResultError()) {
     print(result.error.message);
   }
 
@@ -29,27 +29,27 @@ void main() async {
   var result2 = await ResultOr.fromFuture(someFutureFunction);
 
   switch (result2) {
-    case ResultWithData():
+    case ResultData():
       print(result2.data);
-    case ResultWithError():
+    case ResultError():
       print(result2.error.message);
   }
 
   // Parametrized function example
   var result3 = ResultOr.from(() => someFunctionWithParam(2));
 
-  if (result3 case ResultWithData())  {
+  if (result3 case ResultData())  {
     print(result3.data);
-  } else if (result3 case ResultWithError()) {
+  } else if (result3 case ResultError()) {
     print(result3.error.message);
   }
 
   // Parametrized future function example
   var result4 = await ResultOr.fromFuture(() => someFutureFunctionWithParam("Param"));
 
-  if (result4 case ResultWithData())  {
+  if (result4 case ResultData())  {
     print(result4.data);
-  } else if (result4 case ResultWithError()) {
+  } else if (result4 case ResultError()) {
     print(result4.error.message);
   }
 
@@ -66,18 +66,18 @@ void main() async {
   // Using extensions and async without callbacks
   var result5 = await someFutureFunction.resultOr();
 
-  if (result5 case ResultWithData())  {
+  if (result5 case ResultData())  {
     print(result5.data);
-  } else if (result5 case ResultWithError()) {
+  } else if (result5 case ResultError()) {
     print(result5.error.message);
   }
 
   // Using extensions and async with params
   var result6 = await (() => someFutureFunctionWithParam("param")).resultOr();
 
-  if (result6 case ResultWithData())  {
+  if (result6 case ResultData())  {
     print(result6.data);
-  } else if (result6 case ResultWithError()) {
+  } else if (result6 case ResultError()) {
     print(result6.error.message);
   }
 

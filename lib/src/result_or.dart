@@ -1,6 +1,6 @@
 import 'errors.dart';
 
-part "result_with.dart";
+part "result_data.dart";
 
 /// BaseResultOr class. You can use it to define your own ResultOr, based on your own error types
 sealed class BaseResultOr<T, T2> {}
@@ -18,15 +18,15 @@ sealed class ResultOr<T> extends BaseResultOr<T, BaseResultError> {
     void Function(BaseResultError error)? onError
   }) {
     try {
-      var result = ResultWithData<T>(data: func());
+      var result = ResultData<T>(data: func());
       onSuccess?.call(result.data);
       return result;
     } on NonFatalResultError catch (e) {
-      var error = ResultWithError<T>(error: e);
+      var error = ResultError<T>(error: e);
       onError?.call(error.error);
       return error;
     } catch(e, s) {
-      var error = ResultWithError<T>(error: FatalResultError(e.toString(), s));
+      var error = ResultError<T>(error: FatalResultError(e.toString(), s));
       onError?.call(error.error);
       return error;
     }
@@ -38,11 +38,11 @@ sealed class ResultOr<T> extends BaseResultOr<T, BaseResultError> {
     void Function(BaseResultError error)? onError
   }) async {
     try {
-      return ResultWithData<T>(data: await func());
+      return ResultData<T>(data: await func());
     } on NonFatalResultError catch (e) {
-      return ResultWithError<T>(error: e);
+      return ResultError<T>(error: e);
     } catch(e, s) {
-      return ResultWithError<T>(error: FatalResultError(e.toString(), s));
+      return ResultError<T>(error: FatalResultError(e.toString(), s));
     }
   }
 

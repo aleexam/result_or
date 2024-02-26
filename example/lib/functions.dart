@@ -59,9 +59,9 @@ Future<String> returnResultOrExampleFunction() async {
   var result = await ResultOr.fromFuture(someFutureFunction);
 
   switch (result) {
-    case ResultWithData():
+    case ResultData():
       return result.data;
-    case ResultWithError():
+    case ResultError():
       return result.error.message;
   }
 }
