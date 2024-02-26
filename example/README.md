@@ -1,0 +1,1 @@
+Example of using result_or package
