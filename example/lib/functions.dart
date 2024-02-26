@@ -54,7 +54,7 @@ Future<String> someFutureFunctionWithParam(String param) async {
 }
 
 /// Example of function returning result after processing ResultOr wrapped function.
-/// Thanks to sealed class make this available to be null safety
+/// Thanks to sealed class make this available
 Future<String> returnResultOrExampleFunction() async {
   var result = await ResultOr.fromFuture(someFutureFunction);
 

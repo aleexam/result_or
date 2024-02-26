@@ -3,7 +3,7 @@ import 'errors.dart';
 part "return_types.dart";
 
 /// BaseResultOr class. You can use it to define your own ResultOr, based on your own error types
-sealed class BaseResultOr<T, T2> {}
+abstract class BaseResultOr<T, T2> {}
 
 /// Main ResultOr class, use it to get value or error from any function
 /// Predefined error types are [NonFatalResultError], [FatalResultError] types.
