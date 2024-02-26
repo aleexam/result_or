@@ -1,5 +1,5 @@
 library result_or;
 
-export 'src/result_or.dart';
+export 'src/core.dart';
 export 'src/errors.dart';
-export 'src/result_or_ext.dart';
+export 'src/extensions.dart';

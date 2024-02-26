@@ -1,6 +1,6 @@
 import 'errors.dart';
 
-part "result_data.dart";
+part "return_types.dart";
 
 /// BaseResultOr class. You can use it to define your own ResultOr, based on your own error types
 sealed class BaseResultOr<T, T2> {}
