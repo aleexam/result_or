@@ -26,7 +26,7 @@ sealed class ResultOr<T> extends BaseResultOr<T, BaseResultError> {
       onError?.call(error.error);
       return error;
     } catch(e, s) {
-      var error = ResultError<T>(error: FatalResultError(e.toString(), s));
+      var error = ResultError<T>(error: FatalResultError(e.toString(), s, e));
       onError?.call(error.error);
       return error;
     }
@@ -42,7 +42,7 @@ sealed class ResultOr<T> extends BaseResultOr<T, BaseResultError> {
     } on NonFatalResultError catch (e) {
       return ResultError<T>(error: e);
     } catch(e, s) {
-      return ResultError<T>(error: FatalResultError(e.toString(), s));
+      return ResultError<T>(error: FatalResultError(e.toString(), s, e));
     }
   }
 
