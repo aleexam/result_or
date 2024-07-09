@@ -1,6 +1,6 @@
 name: result_or
 description: "Easy error handling implementation base on ResultOrError/Either idea."
-version: 1.0.0
+version: 0.8.0
 homepage: https://github.com/aleexam/result_or
 issue_tracker: https://github.com/aleexam/result_or/issues
 
