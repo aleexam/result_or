@@ -38,11 +38,17 @@ sealed class ResultOr<T> extends BaseResultOr<T, BaseResultError> {
     void Function(BaseResultError error)? onError
   }) async {
     try {
-      return ResultData<T>(data: await func());
+      var result = ResultData<T>(data: await func());
+      onSuccess?.call(result.data);
+      return result;
     } on NonFatalResultError catch (e) {
-      return ResultError<T>(error: e);
+      var error = ResultError<T>(error: e);
+      onError?.call(error.error);
+      return error;
     } catch(e, s) {
-      return ResultError<T>(error: FatalResultError(e.toString(), s, e));
+      var error = ResultError<T>(error: FatalResultError(e.toString(), s, e));
+      onError?.call(error.error);
+      return error;
     }
   }
 
