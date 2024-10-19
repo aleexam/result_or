@@ -1,3 +1,7 @@
-## 1.0.0
+## 0.8.4
 
-First Official Release version
+* Initial release.
+
+## 0.8.5
+
+* Formatting fixed
