@@ -1,6 +1,6 @@
 name: result_or
-description: "Easy error handling implementation base on ResultOrError/Either idea."
-version: 0.8.3
+description: "Easy error handling implementation based on ResultOrError/Either idea."
+version: 0.8.4
 homepage: https://github.com/aleexam/result_or
 issue_tracker: https://github.com/aleexam/result_or/issues
 
@@ -26,9 +26,6 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^3.0.1
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-
-# The following section is specific to Flutter packages.
 flutter:
+
 
