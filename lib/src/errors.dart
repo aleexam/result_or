@@ -1,4 +1,3 @@
-
 /// Base error class for ResultOr concept
 abstract class BaseResultError {
   final String? _message;
