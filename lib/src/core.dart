@@ -16,8 +16,11 @@ sealed class ResultOr<T> extends BaseResultOr<T, BaseResultError> {
   ResultOr();
 
   /// Function wraps any other function and return either expected value, or error class.
-  static ResultOr<T> from<T>(T Function() func,
-      {void Function(T data)? onSuccess, void Function(BaseResultError error)? onError}) {
+  static ResultOr<T> from<T>(
+    T Function() func, {
+    void Function(T data)? onSuccess,
+    void Function(BaseResultError error)? onError,
+  }) {
     try {
       var result = ResultData<T>(data: func());
       onSuccess?.call(result.data);
@@ -41,9 +44,11 @@ sealed class ResultOr<T> extends BaseResultOr<T, BaseResultError> {
   }
 
   /// Function wraps any other Future function and return either expected value, or error class.
-  static Future<ResultOr<T>> fromFuture<T>(Future<T> Function() func,
-      {void Function(T data)? onSuccess,
-      void Function(BaseResultError error)? onError}) async {
+  static Future<ResultOr<T>> fromFuture<T>(
+    Future<T> Function() func, {
+    void Function(T data)? onSuccess,
+    void Function(BaseResultError error)? onError,
+  }) async {
     try {
       var result = ResultData<T>(data: await func());
       onSuccess?.call(result.data);
