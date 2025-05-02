@@ -1,6 +1,6 @@
 name: result_or
 description: "Easy error handling implementation based on ResultOrError/Either idea."
-version: 0.8.5
+version: 0.8.6
 homepage: https://github.com/aleexam/result_or
 issue_tracker: https://github.com/aleexam/result_or/issues
 
@@ -27,3 +27,4 @@ dev_dependencies:
   flutter_lints: ^3.0.1
 
 flutter:
+

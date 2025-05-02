@@ -10,15 +10,17 @@ abstract class BaseResultError {
 
 /// Error class for Non-Fatal Errors
 /// You can extend this class to use your own errors class
-/// For example ApiError, UIError, etc
 class NonFatalResultError extends BaseResultError implements Exception {
   NonFatalResultError(super.message, [super.originalError]);
 }
 
 /// Error class for Fatal Errors
 /// Better use for handling fatal exceptions
-class FatalResultError extends BaseResultError implements Exception {
-  final StackTrace? stack;
+class FatalResultError extends BaseResultError implements Error {
+  final StackTrace? _stack;
 
-  FatalResultError(super.message, this.stack, [super.originalError]);
+  FatalResultError(super.message, this._stack, [super.originalError]);
+
+  @override
+  StackTrace? get stackTrace => _stack;
 }
