@@ -1,3 +1,32 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+*.iml
+*.ipr
+*.iws
+.idea/
+/pubspec.lock
+**/doc/api/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+build/
+/analysis_options.yaml
+/.metadata
+/example/.metadata
+/example/.flutter-plugins
+/example/.flutter-plugins-dependencies
+/example/macos/
+/test/test_temp/
+
 /pubspec.lock
 /example/.dart_tool/
 /example/.idea/
@@ -7,3 +36,4 @@
 /example/.flutter-plugins-dependencies
 /example/pubspec.lock
 /test/test_temp/
+/build/
