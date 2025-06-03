@@ -1,6 +1,6 @@
 import 'package:result_or/result_or.dart';
 
-import 'functions.dart';
+import 'example_functions.dart';
 
 void main() async {
   /// With ResultOr simply call your functions in bloc/store/etc, or anywhere else, wrapped in ResultOr.
@@ -26,6 +26,8 @@ void main() async {
   );
 
   // Future function example + switch/case
+  // This one comes with exhaustiveness, good to use
+  // when you need return something from parent function
   var result2 = await ResultOr.fromFuture(someFutureFunction);
 
   switch (result2) {
