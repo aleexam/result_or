@@ -27,13 +27,7 @@ build/
 /example/macos/
 /test/test_temp/
 
-/pubspec.lock
-/example/.dart_tool/
 /example/.idea/
 /.idea/
 /.dart_tool/
-/example/.flutter-plugins
-/example/.flutter-plugins-dependencies
-/example/pubspec.lock
-/test/test_temp/
 /build/
