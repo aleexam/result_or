@@ -7,27 +7,21 @@ import 'errors.dart';
 part "return_types.dart";
 
 /// BaseResultOr class. You can use it to define your own ResultOr, based on your own error types
-abstract class BaseResultOr<T, T2> {}
+abstract class BaseResultOr<T, T2> {
+  const BaseResultOr();
+}
 
 /// Main ResultOr class, use it to get value or error from any function
 /// Predefined error types are [NonFatalResultError], [FatalResultError] types.
 /// You can extend these types, or define custom base error types using [BaseResultOr]
 sealed class ResultOr<T> extends BaseResultOr<T, BaseResultError> {
 
-  /// Handy getters
-  bool get isSuccess => this is ResultData<T>;
-  bool get isError => this is ResultError<T>;
-  T? get dataOrNull => this is ResultData<T> ? (this as ResultData<T>).data : null;
-  BaseResultError? get errorOrNull => this is ResultError<T> ? (this as ResultError<T>).error : null;
-
-  ResultOr();
-
-  /// Function wraps any other function and return either expected value, or error class.
-  static ResultOr<T> from<T>(
-    T Function() func, {
-    void Function(T data)? onSuccess,
-    void Function(BaseResultError error)? onError,
-  }) {
+  /// Wraps any other function and return either expected value, or error class.
+  factory ResultOr(
+      T Function() func, {
+        void Function(T data)? onSuccess,
+        void Function(BaseResultError error)? onError,
+      }) {
     try {
       var result = ResultData<T>(data: func());
       onSuccess?.call(result.data);
@@ -39,8 +33,8 @@ sealed class ResultOr<T> extends BaseResultOr<T, BaseResultError> {
     }
   }
 
-  /// Function wraps any other Future function and return either expected value, or error class.
-  static Future<ResultOr<T>> fromFuture<T>(
+  /// Wraps any other Future function and return either expected value, or error class.
+  static Future<ResultOr<T>> async<T>(
     Future<T> Function() func, {
     void Function(T data)? onSuccess,
     void Function(BaseResultError error)? onError,
@@ -56,8 +50,8 @@ sealed class ResultOr<T> extends BaseResultOr<T, BaseResultError> {
     }
   }
 
-  /// Function wraps any Stream and return Stream<ResultOr<T> with either expected value, or error class type.
-  static Stream<ResultOr<T>> fromStream<T>(Stream<T> stream) {
+  /// Wraps any Stream and return Stream<ResultOr<T> with either expected value, or error class type.
+  static Stream<ResultOr<T>> stream<T>(Stream<T> stream) {
     return Stream.eventTransformed(stream.map((data) {
       return ResultData(data: data);
     }), (sink) => _ResultOrDuplicateSink(sink));

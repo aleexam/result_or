@@ -8,7 +8,7 @@ extension ResultOrFunctionExtSync<T> on T Function() {
     void Function(T data)? onSuccess,
     void Function(BaseResultError error)? onError,
   }) {
-    return ResultOr.from(this, onSuccess: onSuccess, onError: onError);
+    return ResultOr(this, onSuccess: onSuccess, onError: onError);
   }
 }
 
@@ -18,12 +18,18 @@ extension ResultOrFunctionExtAsync<T> on Future<T> Function() {
     void Function(T data)? onSuccess,
     void Function(BaseResultError error)? onError,
   }) {
-    return ResultOr.fromFuture(this, onSuccess: onSuccess, onError: onError);
+    return ResultOr.async(this, onSuccess: onSuccess, onError: onError);
   }
 }
 
 /// Extension methods for ResultOr<T> to enable functional-style transformations.
 extension ResultOrExt<T> on ResultOr<T> {
+
+  /// Handy getters
+  bool get isSuccess => this is ResultData<T>;
+  bool get isError => this is ResultError<T>;
+  T? get dataOrNull => this is ResultData<T> ? (this as ResultData<T>).data : null;
+  BaseResultError? get errorOrNull => this is ResultError<T> ? (this as ResultError<T>).error : null;
 
   /// Chains another ResultOr-producing function if this result is successful.
   ///
@@ -36,6 +42,32 @@ extension ResultOrExt<T> on ResultOr<T> {
       case ResultError(:final error):
         return ResultError<R>(error: error);
     }
+  }
+
+  R when<R>(
+    Function(T data) whenSuccess,
+    Function(BaseResultError error) whenError,
+  ) {
+    switch (this) {
+      case ResultData(:final data):
+        return whenSuccess(data);
+      case ResultError(:final error):
+        return whenError(error);
+    }
+  }
+
+  R onSuccess<R>(Function(T data) onSuccess) {
+    return switch (this) {
+      ResultData(:final data) => onSuccess(data),
+      ResultError() => (){},
+    };
+  }
+
+  R onError<R>(Function(BaseResultError error) onError) {
+    return switch (this) {
+      ResultData() => (){},
+      ResultError(:final error) => onError(error),
+    };
   }
 
   /// Maps the successful result data to a new type using [transform].

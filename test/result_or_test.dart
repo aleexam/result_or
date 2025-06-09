@@ -12,9 +12,9 @@ class TestFatalError extends FatalResultError {
 }
 
 void main() {
-  group('ResultOr.from tests', () {
+  group('ResultOr tests', () {
     test('should return ResultData on success', () {
-      var result = ResultOr.from(() => 17);
+      var result = ResultOr(() => 17);
 
       expect(result.dataOrNull != null, isTrue);
       expect(result.errorOrNull == null, isTrue);
@@ -24,7 +24,7 @@ void main() {
     });
 
     test('should return ResultError on NonFatalResultError', () {
-      var result = ResultOr.from<int>(() {
+      var result = ResultOr<int>(() {
         throw TestNonFatalError('Non-fatal error');
       });
 
@@ -37,7 +37,7 @@ void main() {
     });
 
     test('should return ResultError with NonFatalResultError for Exception', () {
-      var result = ResultOr.from<int>(() {
+      var result = ResultOr<int>(() {
         throw Exception('Generic error');
       });
 
@@ -47,7 +47,7 @@ void main() {
     });
 
     test('should return ResultError with FatalResultError for Error', () {
-      var result = ResultOr.from<int>(() {
+      var result = ResultOr<int>(() {
         throw ArgumentError('Fatal error');
       });
 
@@ -59,7 +59,7 @@ void main() {
     test('should call onSuccess callback when successful', () {
       int? callbackValue;
 
-      ResultOr.from(() => 2, onSuccess: (value) => callbackValue = value);
+      ResultOr(() => 2, onSuccess: (value) => callbackValue = value);
 
       expect(callbackValue, 2);
     });
@@ -67,7 +67,7 @@ void main() {
     test('should call onError callback when error occurs', () {
       BaseResultError? callbackError;
 
-      ResultOr.from<int>(() => throw TestNonFatalError('Test error'),
+      ResultOr<int>(() => throw TestNonFatalError('Test error'),
           onError: (error) => callbackError = error);
 
       expect(callbackError, isA<NonFatalResultError>());
@@ -75,16 +75,16 @@ void main() {
     });
   });
 
-  group('ResultOr.fromFuture tests', () {
+  group('ResultOr.async tests', () {
     test('should return ResultData on success', () async {
-      var result = await ResultOr.fromFuture(() async => 100);
+      var result = await ResultOr.async(() async => 100);
 
       expect(result, isA<ResultData<int>>());
       expect((result as ResultData<int>).data, 100);
     });
 
     test('should return ResultError on NonFatalResultError', () async {
-      var result = await ResultOr.fromFuture<int>(() async {
+      var result = await ResultOr.async<int>(() async {
         throw TestNonFatalError('Future error');
       });
 
@@ -94,7 +94,7 @@ void main() {
     });
 
     test('should return ResultError with FatalResultError for Error', () async {
-      var result = await ResultOr.fromFuture<int>(() async {
+      var result = await ResultOr.async<int>(() async {
         throw ArgumentError('Future fatal error');
       });
 
@@ -104,7 +104,7 @@ void main() {
     });
 
     test('should return ResultError with NonFatalResultError for Exception', () async {
-      var result = await ResultOr.fromFuture<int>(() async {
+      var result = await ResultOr.async<int>(() async {
         throw Exception('Future generic error');
       });
 
@@ -116,7 +116,7 @@ void main() {
     test('should call onSuccess callback when successful', () async {
       int? callbackValue;
 
-      await ResultOr.fromFuture(() async => 123, onSuccess: (value) => callbackValue = value);
+      await ResultOr.async(() async => 123, onSuccess: (value) => callbackValue = value);
 
       expect(callbackValue, 123);
     });
@@ -124,7 +124,7 @@ void main() {
     test('should call onError callback when error occurs', () async {
       BaseResultError? callbackError;
 
-      await ResultOr.fromFuture<int>(() async => throw TestNonFatalError('Future test error'),
+      await ResultOr.async<int>(() async => throw TestNonFatalError('Future test error'),
           onError: (error) => callbackError = error);
 
       expect(callbackError, isA<NonFatalResultError>());
@@ -132,13 +132,13 @@ void main() {
     });
   });
 
-  group('ResultOr.fromStream tests', () {
+  group('ResultOr.stream tests', () {
     test('should convert successful stream values to ResultData', () async {
       final controller = StreamController<int>();
       final values = [10, 20, 30, 40, 50];
       final resultValues = <ResultOr<int>>[];
 
-      final stream = ResultOr.fromStream(controller.stream);
+      final stream = ResultOr.stream(controller.stream);
       final completer = Completer<void>();
 
       final subscription = stream.listen(
@@ -175,7 +175,7 @@ void main() {
       final resultValues = <ResultOr<int>>[];
       final completer = Completer<void>();
 
-      final stream = ResultOr.fromStream(controller.stream);
+      final stream = ResultOr.stream(controller.stream);
 
       final subscription = stream.listen(
         (resultOr) {
@@ -322,7 +322,7 @@ void main() {
 
   group('Error types tests', () {
     test('should handle custom NonFatalResultError', () {
-      var result = ResultOr.from<int>(() {
+      var result = ResultOr<int>(() {
         throw TestNonFatalError('Custom non-fatal error');
       });
 
@@ -349,17 +349,17 @@ void main() {
     test('should handle void return type', () {
       void voidFunction() {}
 
-      var result = ResultOr.from<void>(voidFunction);
+      var result = ResultOr<void>(voidFunction);
 
       expect(result, isA<ResultData<void>>());
     });
 
     test('Nested ResultOr', () async {
       Future<ResultOr<int>> nestedFunction() async {
-        return ResultOr.from(() => 123);
+        return ResultOr(() => 123);
       }
 
-      var result = await ResultOr.fromFuture(nestedFunction);
+      var result = await ResultOr.async(nestedFunction);
 
       expect(result, isA<ResultData<ResultOr<int>>>());
       var innerResult = (result as ResultData<ResultOr<int>>).data;
@@ -369,7 +369,7 @@ void main() {
 
     test('onError throws, exception bubbles up', () {
       expect(
-        () => ResultOr.from<int>(
+        () => ResultOr<int>(
           () => throw TestNonFatalError('fail'),
           onError: (_) => throw Exception('onError exception'),
         ),
@@ -377,16 +377,16 @@ void main() {
       );
     });
 
-    test('fromFuture handles Future.error', () async {
+    test('async handles Future.error', () async {
       var result =
-          await ResultOr.fromFuture<int>(() => Future.error(TestNonFatalError('future fail')));
+          await ResultOr.async<int>(() => Future.error(TestNonFatalError('future fail')));
       expect(result, isA<ResultError<int>>());
       expect((result as ResultError<int>).error, isA<TestNonFatalError>());
       expect(result.error.message, 'future fail');
     });
 
-    test('fromFuture handles synchronous throw inside async closure', () async {
-      var result = await ResultOr.fromFuture<int>(() async {
+    test('async handles synchronous throw inside async closure', () async {
+      var result = await ResultOr.async<int>(() async {
         throw TestNonFatalError('sync inside async');
       });
       expect(result, isA<ResultError<int>>());
@@ -398,7 +398,7 @@ void main() {
       final errors = [TestNonFatalError('err1'), TestNonFatalError('err2')];
       final results = <ResultOr<int>>[];
       final completer = Completer<void>();
-      final stream = ResultOr.fromStream(controller.stream);
+      final stream = ResultOr.stream(controller.stream);
 
       final subscription = stream.listen(
         (result) {
@@ -434,8 +434,8 @@ void main() {
       expect(error.isError, isTrue);
     });
 
-    test('ResultOr.from handles thrown Error (not Exception) as FatalResultError', () {
-      var result = ResultOr.from<int>(() {
+    test('ResultOr handles thrown Error (not Exception) as FatalResultError', () {
+      var result = ResultOr<int>(() {
         throw StateError('fatal!');
       });
       expect(result, isA<ResultError<int>>());
@@ -445,7 +445,7 @@ void main() {
 
     test('ResultOr can handle void synchronous code that throws', () {
       void voidError() => throw TestNonFatalError('void error');
-      var result = ResultOr.from<void>(voidError);
+      var result = ResultOr<void>(voidError);
       expect(result, isA<ResultError<void>>());
       expect((result as ResultError<void>).error.message, 'void error');
     });
@@ -468,10 +468,10 @@ void main() {
 
     test('Nested ResultError inside ResultData', () async {
       Future<ResultOr<int>> nestedFailingFunction() async {
-        return ResultOr.from(() => throw TestNonFatalError('inner fail'));
+        return ResultOr(() => throw TestNonFatalError('inner fail'));
       }
 
-      var result = await ResultOr.fromFuture(nestedFailingFunction);
+      var result = await ResultOr.async(nestedFailingFunction);
       expect((result as ResultData).data, isA<ResultError<int>>());
     });
 
@@ -485,25 +485,25 @@ void main() {
       final controller = StreamController<int>();
       controller.close();
       await Future.delayed(Duration.zero);
-      final stream = ResultOr.fromStream(controller.stream);
+      final stream = ResultOr.stream(controller.stream);
       final values = await stream.toList();
       expect(values.isEmpty, isTrue);
     });
 
     test('onError rethrows error', () {
       expect(
-            () => ResultOr.from(() => throw TestNonFatalError('err'), onError: (e) => throw e),
+            () => ResultOr(() => throw TestNonFatalError('err'), onError: (e) => throw e),
         throwsA(isA<TestNonFatalError>()),
       );
     });
 
     test('Unexpected thrown', () {
-      var result = ResultOr.from(() => throw 12);
+      var result = ResultOr(() => throw 12);
       expect((result as ResultError).error, isA<UnexpectedResultError>());
     });
 
     test('Another map test', () {
-      final result = ResultOr.from(() => 27)
+      final result = ResultOr(() => 27)
           .map((n) => "${n * 2}");
 
       expect((result as ResultData).data, equals("54"));

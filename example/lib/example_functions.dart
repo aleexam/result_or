@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:result_or/result_or.dart';
 
 /// Simply create function which return desired result or throws exceptions/errors.
-/// All exceptions will be handled by Either wrappers [ResultOr.fromFunction], [ResultOr.fromFuture], etc.
+/// All exceptions will be handled by Either wrappers [ResultOr], [ResultOr.async], etc.
 String someFunction() {
   // Just random value to randomize success / errors
   var isSuccess = Random().nextBool();
@@ -56,8 +56,7 @@ Future<String> someFutureFunctionWithParam(String param) async {
 /// Example of function returning result after processing ResultOr wrapped function.
 /// Thanks to sealed class make this available
 Future<String> returnResultOrExampleFunction() async {
-  var result = await ResultOr.fromFuture(someFutureFunction);
-
+  var result = await ResultOr.async(someFutureFunction);
   switch (result) {
     case ResultData():
       return result.data;

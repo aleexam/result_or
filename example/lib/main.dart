@@ -6,7 +6,7 @@ void main() async {
   /// With ResultOr simply call your functions in bloc/store/etc, or anywhere else, wrapped in ResultOr.
   /// Get result data or error.
 
-  var result = ResultOr.from(someFunction);
+  var result = ResultOr(someFunction);
   // var result = someFunction.resultOr();
 
   if (result case ResultData())  {
@@ -16,7 +16,7 @@ void main() async {
   }
 
   // Callback function example
-  ResultOr.from(someFunction,
+  ResultOr(someFunction,
       onSuccess: (data) {
         print(data);
       },
@@ -28,7 +28,7 @@ void main() async {
   // Future function example + switch/case
   // This one comes with exhaustiveness, good to use
   // when you need return something from parent function
-  var result2 = await ResultOr.fromFuture(someFutureFunction);
+  var result2 = await ResultOr.async(someFutureFunction);
 
   switch (result2) {
     case ResultData():
@@ -38,7 +38,7 @@ void main() async {
   }
 
   // Parametrized function example
-  var result3 = ResultOr.from(() => someFunctionWithParam(2));
+  var result3 = ResultOr(() => someFunctionWithParam(2));
 
   if (result3 case ResultData())  {
     print(result3.data);
@@ -47,7 +47,7 @@ void main() async {
   }
 
   // Parametrized future function example
-  var result4 = await ResultOr.fromFuture(() => someFutureFunctionWithParam("Param"));
+  var result4 = await ResultOr.async(() => someFutureFunctionWithParam("Param"));
 
   if (result4 case ResultData())  {
     print(result4.data);
