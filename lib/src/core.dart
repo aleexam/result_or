@@ -7,21 +7,18 @@ import 'errors.dart';
 part "return_types.dart";
 
 /// BaseResultOr class. You can use it to define your own ResultOr, based on your own error types
-abstract class BaseResultOr<T, T2> {
-  const BaseResultOr();
-}
+abstract class BaseResultOr<T, T2> {}
 
 /// Main ResultOr class, use it to get value or error from any function
 /// Predefined error types are [NonFatalResultError], [FatalResultError] types.
 /// You can extend these types, or define custom base error types using [BaseResultOr]
 sealed class ResultOr<T> extends BaseResultOr<T, BaseResultError> {
-
   /// Wraps any other function and return either expected value, or error class.
   factory ResultOr(
-      T Function() func, {
-        void Function(T data)? onSuccess,
-        void Function(BaseResultError error)? onError,
-      }) {
+    T Function() func, {
+    void Function(T data)? onSuccess,
+    void Function(BaseResultError error)? onError,
+  }) {
     try {
       var result = ResultData<T>(data: func());
       onSuccess?.call(result.data);
@@ -66,7 +63,8 @@ sealed class ResultOr<T> extends BaseResultOr<T, BaseResultError> {
       }
       return error;
     } else if (e case Exception()) {
-      var error = ResultError<T>(error: NonFatalResultError(e.toString(), s, e));
+      var error =
+          ResultError<T>(error: NonFatalResultError(e.toString(), s, e));
       if (kDebugMode) {
         print(e);
         print(s);
@@ -80,7 +78,8 @@ sealed class ResultOr<T> extends BaseResultOr<T, BaseResultError> {
       }
       return error;
     } else {
-      var error = ResultError<T>(error: UnexpectedResultError(e.toString(), s, e));
+      var error =
+          ResultError<T>(error: UnexpectedResultError(e.toString(), s, e));
       if (kDebugMode) {
         print(e);
         print(s);

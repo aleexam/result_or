@@ -1,4 +1,3 @@
-
 import 'dart:math';
 
 import 'package:result_or/result_or.dart';

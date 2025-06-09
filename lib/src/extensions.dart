@@ -24,12 +24,13 @@ extension ResultOrFunctionExtAsync<T> on Future<T> Function() {
 
 /// Extension methods for ResultOr<T> to enable functional-style transformations.
 extension ResultOrExt<T> on ResultOr<T> {
-
   /// Handy getters
   bool get isSuccess => this is ResultData<T>;
   bool get isError => this is ResultError<T>;
-  T? get dataOrNull => this is ResultData<T> ? (this as ResultData<T>).data : null;
-  BaseResultError? get errorOrNull => this is ResultError<T> ? (this as ResultError<T>).error : null;
+  T? get dataOrNull =>
+      this is ResultData<T> ? (this as ResultData<T>).data : null;
+  BaseResultError? get errorOrNull =>
+      this is ResultError<T> ? (this as ResultError<T>).error : null;
 
   /// Chains another ResultOr-producing function if this result is successful.
   ///
@@ -56,18 +57,16 @@ extension ResultOrExt<T> on ResultOr<T> {
     }
   }
 
-  R onSuccess<R>(Function(T data) onSuccess) {
-    return switch (this) {
-      ResultData(:final data) => onSuccess(data),
-      ResultError() => (){},
-    };
+  void onSuccess<R>(Function(T data) callback) {
+    if (this case ResultData<T>()) {
+      callback((this as ResultData<T>).data);
+    }
   }
 
-  R onError<R>(Function(BaseResultError error) onError) {
-    return switch (this) {
-      ResultData() => (){},
-      ResultError(:final error) => onError(error),
-    };
+  void onError<R>(Function(BaseResultError error) callback) {
+    if (this case ResultError<T>()) {
+      callback((this as ResultError<T>).error);
+    }
   }
 
   /// Maps the successful result data to a new type using [transform].
@@ -87,7 +86,8 @@ extension ResultOrExt<T> on ResultOr<T> {
   ///
   /// - If this is a [ResultError], applies [transform] to its error and returns new ResultError.
   /// - If this is a [ResultData], returns the same success unchanged.
-  ResultOr<T> mapError(BaseResultError Function(BaseResultError error) transform) {
+  ResultOr<T> mapError(
+      BaseResultError Function(BaseResultError error) transform) {
     if (this is ResultError<T>) {
       final original = (this as ResultError<T>).error;
       return ResultError<T>(error: transform(original));

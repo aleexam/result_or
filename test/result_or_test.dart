@@ -36,7 +36,8 @@ void main() {
       expect(result.error.message, 'Non-fatal error');
     });
 
-    test('should return ResultError with NonFatalResultError for Exception', () {
+    test('should return ResultError with NonFatalResultError for Exception',
+        () {
       var result = ResultOr<int>(() {
         throw Exception('Generic error');
       });
@@ -53,7 +54,8 @@ void main() {
 
       expect(result, isA<ResultError<int>>());
       expect((result as ResultError<int>).error, isA<FatalResultError>());
-      expect(result.error.message, contains('Invalid argument(s): Fatal error'));
+      expect(
+          result.error.message, contains('Invalid argument(s): Fatal error'));
     });
 
     test('should call onSuccess callback when successful', () {
@@ -100,10 +102,12 @@ void main() {
 
       expect(result, isA<ResultError<int>>());
       expect((result as ResultError<int>).error, isA<FatalResultError>());
-      expect(result.error.message, contains('Invalid argument(s): Future fatal error'));
+      expect(result.error.message,
+          contains('Invalid argument(s): Future fatal error'));
     });
 
-    test('should return ResultError with NonFatalResultError for Exception', () async {
+    test('should return ResultError with NonFatalResultError for Exception',
+        () async {
       var result = await ResultOr.async<int>(() async {
         throw Exception('Future generic error');
       });
@@ -116,7 +120,8 @@ void main() {
     test('should call onSuccess callback when successful', () async {
       int? callbackValue;
 
-      await ResultOr.async(() async => 123, onSuccess: (value) => callbackValue = value);
+      await ResultOr.async(() async => 123,
+          onSuccess: (value) => callbackValue = value);
 
       expect(callbackValue, 123);
     });
@@ -124,7 +129,8 @@ void main() {
     test('should call onError callback when error occurs', () async {
       BaseResultError? callbackError;
 
-      await ResultOr.async<int>(() async => throw TestNonFatalError('Future test error'),
+      await ResultOr.async<int>(
+          () async => throw TestNonFatalError('Future test error'),
           onError: (error) => callbackError = error);
 
       expect(callbackError, isA<NonFatalResultError>());
@@ -201,7 +207,8 @@ void main() {
       expect((resultValues[0] as ResultData<int>).data, 55);
 
       expect(resultValues[1], isA<ResultError<int>>());
-      expect((resultValues[1] as ResultError<int>).error.message, error.message);
+      expect(
+          (resultValues[1] as ResultError<int>).error.message, error.message);
     });
   });
 
@@ -223,7 +230,7 @@ void main() {
       final result = ResultError<int>(error: TestNonFatalError('original'));
 
       final transformed = result.mapError(
-            (error) => TestNonFatalError('transformed: ${error.message}'),
+        (error) => TestNonFatalError('transformed: ${error.message}'),
       );
 
       expect(transformed, isA<ResultError<int>>());
@@ -235,7 +242,7 @@ void main() {
       final result = ResultData<int>(data: 123);
 
       final transformed = result.mapError(
-            (error) => TestNonFatalError('should not be called'),
+        (error) => TestNonFatalError('should not be called'),
       );
 
       expect(transformed, isA<ResultData<int>>());
@@ -243,18 +250,21 @@ void main() {
     });
 
     test('mapError should preserve original type parameter', () {
-      ResultOr<String> result = ResultError<String>(error: TestNonFatalError('error'));
-      final transformed = result.mapError((e) => TestNonFatalError('new ${e.message}'));
+      ResultOr<String> result =
+          ResultError<String>(error: TestNonFatalError('error'));
+      final transformed =
+          result.mapError((e) => TestNonFatalError('new ${e.message}'));
 
       expect(transformed, isA<ResultError<String>>());
       expect((transformed as ResultError<String>).error.message, 'new error');
     });
 
     test('mapError can transform to different error subtype', () {
-      ResultOr<int> result = ResultError<int>(error: TestNonFatalError('some error'));
+      ResultOr<int> result =
+          ResultError<int>(error: TestNonFatalError('some error'));
 
       final transformed = result.mapError(
-            (e) => TestFatalError('fatal: ${e.message}', StackTrace.current),
+        (e) => TestFatalError('fatal: ${e.message}', StackTrace.current),
       );
 
       expect(transformed, isA<ResultError<int>>());
@@ -272,7 +282,8 @@ void main() {
     });
 
     test('andThen should short-circuit on error', () {
-      final result = ResultError<int>(error: TestNonFatalError('fail')).andThen((x) {
+      final result =
+          ResultError<int>(error: TestNonFatalError('fail')).andThen((x) {
         return ResultData<String>(data: 'Should not run');
       });
 
@@ -310,7 +321,8 @@ void main() {
     });
 
     test('should handle async function extensions with errors', () async {
-      Future<int> errorFunction() async => throw TestNonFatalError('Async extension error');
+      Future<int> errorFunction() async =>
+          throw TestNonFatalError('Async extension error');
 
       var result = await errorFunction.resultOr();
 
@@ -378,8 +390,8 @@ void main() {
     });
 
     test('async handles Future.error', () async {
-      var result =
-          await ResultOr.async<int>(() => Future.error(TestNonFatalError('future fail')));
+      var result = await ResultOr.async<int>(
+          () => Future.error(TestNonFatalError('future fail')));
       expect(result, isA<ResultError<int>>());
       expect((result as ResultError<int>).error, isA<TestNonFatalError>());
       expect(result.error.message, 'future fail');
@@ -434,7 +446,8 @@ void main() {
       expect(error.isError, isTrue);
     });
 
-    test('ResultOr handles thrown Error (not Exception) as FatalResultError', () {
+    test('ResultOr handles thrown Error (not Exception) as FatalResultError',
+        () {
       var result = ResultOr<int>(() {
         throw StateError('fatal!');
       });
@@ -451,17 +464,19 @@ void main() {
     });
 
     test('Nested map and andThen calls', () {
-      final result = ResultData<int>(data: 10).map((n) => n * 2).andThen((n) => n > 10
-          ? ResultData<String>(data: 'Big: $n')
-          : ResultError<String>(error: TestNonFatalError('Too small')));
+      final result = ResultData<int>(data: 10).map((n) => n * 2).andThen((n) =>
+          n > 10
+              ? ResultData<String>(data: 'Big: $n')
+              : ResultError<String>(error: TestNonFatalError('Too small')));
       expect(result, isA<ResultData<String>>());
       expect((result as ResultData<String>).data, 'Big: 20');
     });
 
     test('Nested map andThen returns error path', () {
-      final result = ResultData<int>(data: 3).map((n) => n * 2).andThen((n) => n > 10
-          ? ResultData<String>(data: 'Big: $n')
-          : ResultError<String>(error: TestNonFatalError('Too small')));
+      final result = ResultData<int>(data: 3).map((n) => n * 2).andThen((n) =>
+          n > 10
+              ? ResultData<String>(data: 'Big: $n')
+              : ResultError<String>(error: TestNonFatalError('Too small')));
       expect(result, isA<ResultError<String>>());
       expect((result as ResultError<String>).error.message, 'Too small');
     });
@@ -492,7 +507,8 @@ void main() {
 
     test('onError rethrows error', () {
       expect(
-            () => ResultOr(() => throw TestNonFatalError('err'), onError: (e) => throw e),
+        () => ResultOr(() => throw TestNonFatalError('err'),
+            onError: (e) => throw e),
         throwsA(isA<TestNonFatalError>()),
       );
     });
@@ -503,11 +519,34 @@ void main() {
     });
 
     test('Another map test', () {
-      final result = ResultOr(() => 27)
-          .map((n) => "${n * 2}");
+      final result = ResultOr(() => 27).map((n) => "${n * 2}");
 
       expect((result as ResultData).data, equals("54"));
     });
 
+    test('extensions test', () async {
+      var result = ResultOr(() => 52);
+      var result2 = ResultOr(() => throw Exception("error_ex"));
+      var success1 = 0;
+      var success2 = 0;
+      var error1 = "";
+      var error2 = "";
+
+      result.onSuccess((data) {
+        success1 = data;
+      });
+      result2.onError((error) {
+        error1 = error.message;
+      });
+
+      result.when((data) => success2 = data, (error) {});
+      result2.when((_) {}, (error) => error2 = error.message);
+
+      expect(success1, equals(52));
+      expect(success2, equals(52));
+      expect(error1, equals("Exception: error_ex"));
+      expect(error2, equals("Exception: error_ex"));
+
+    });
   });
 }
