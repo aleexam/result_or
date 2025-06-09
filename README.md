@@ -117,7 +117,7 @@ dependencies:
     
     // Fields to get data/error or null, convenient to use in some rare cases
     print("Data: ${result.dataOrNull}"); // null
-    print("Error: ${result.errorOrNull?.message}");
+    print("Error: ${result.errorOrNull?.message}"); // "failure"
 
     /// Maps the successful result data to a new type using [transform].
     ///
