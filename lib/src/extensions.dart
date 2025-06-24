@@ -46,8 +46,8 @@ extension ResultOrExt<T> on ResultOr<T> {
   }
 
   R when<R>(
-    Function(T data) whenSuccess,
-    Function(BaseResultError error) whenError,
+    R Function(T data) whenSuccess,
+    R Function(BaseResultError error) whenError,
   ) {
     switch (this) {
       case ResultData(:final data):
