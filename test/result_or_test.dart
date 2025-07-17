@@ -2,7 +2,7 @@
 
 import 'dart:async';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:result_or/result_or.dart';
 
 class TestNonFatalError extends NonFatalResultError {

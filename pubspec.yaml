@@ -14,17 +14,6 @@ platforms:
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
-  flutter: ">=1.17.0"
-
-dependencies:
-  flutter:
-    sdk: flutter
-
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^3.0.1
-
-flutter:
-  uses-material-design: true
+  test: ^1.20.0
