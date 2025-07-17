@@ -19,7 +19,7 @@ Pure dart package. Requires **Dart 3.0+**
 
 ```yaml
 dependencies:
-  result_or: ^0.8.7
+  result_or: ^0.8.8
 ```
 
 ## Usage

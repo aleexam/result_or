@@ -17,3 +17,12 @@
 * Minor refactoring and bug fixes
 * Tests commited
 * Readme updated
+
+## 0.8.8
+
+* Customizable error reporter added;
+* Better and shorter naming for main functions;
+* Better when, onSuccess/onError;
+* Readme updated;
+* Various fix and refactor;
+* Tests updated;
