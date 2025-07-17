@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -12,6 +14,14 @@ class TestFatalError extends FatalResultError {
 }
 
 void main() {
+
+  setUp(() {
+    ResultOrHandledErrorReporter.setCustomHandledErrorReporter((e, s) {
+      print(e);
+      print(s);
+    });
+  });
+
   group('ResultOr tests', () {
     test('should return ResultData on success', () {
       var result = ResultOr(() => 17);
@@ -577,6 +587,108 @@ void main() {
 
       expect(successResult, isA<int?>());
       expect(errorResult, isA<BaseResultError?>());
+    });
+
+    test('onSuccess/onError map test', () {
+      String? success;
+      String? error;
+      final result = ResultOr(() => 27).map((n) => "${n * 2}",
+        onSuccess: (data) => success = data
+      ).when((data) => data, (error) => null);
+      ResultOr(() => throw Exception("msg")).map((n) => "",
+          onError: (err) => error = err.message
+      );
+
+      expect(result, equals("54"));
+      expect(success, equals("54"));
+      expect(error, equals("Exception: msg"));
+    });
+  });
+
+  group('ResultOr.stream', () {
+    test('should wrap stream', () async {
+      final source = Stream.fromIterable([1, 2, 3]);
+      final wrapped = ResultOr.stream<int>(source);
+
+      final events = await wrapped.toList();
+      expect(events.length, 3);
+
+      for (var i = 0; i < 3; i++) {
+        final ev = events[i];
+        expect(ev, isA<ResultData<int>>());
+        expect((ev as ResultData<int>).data, equals(i + 1));
+      }
+    });
+
+    test('should wrap stream error to ResultError', () async {
+      final controller = StreamController<int>();
+      final wrapped = ResultOr.stream<int>(controller.stream);
+
+      final results = <ResultOr<int>>[];
+
+      wrapped.listen(
+            (r) => results.add(r),
+        onDone: () {},
+      );
+
+      controller.add(10);
+      controller.add(20);
+
+      controller.addError(Exception('test-exception'), StackTrace.current);
+
+      controller.add(30);
+
+      await controller.close();
+      await Future.delayed(Duration.zero);
+
+      expect(results.length, 4);
+
+      expect(results[0], isA<ResultData<int>>());
+      expect((results[0] as ResultData<int>).data, equals(10));
+      expect(results[1], isA<ResultData<int>>());
+      expect((results[1] as ResultData<int>).data, equals(20));
+
+      expect(results[2], isA<ResultError<int>>());
+      final err = (results[2] as ResultError<int>).error;
+      expect(err, isA<NonFatalResultError>());
+      expect(err.message, contains('test-exception'));
+
+      expect(results[3], isA<ResultData<int>>());
+      expect((results[3] as ResultData<int>).data, equals(30));
+    });
+
+    test('setDefaultDebugErrorReporter should rethrow into zone with "Caught by ResultOr" label', () async {
+      Object? caughtError;
+      StackTrace? caughtStack;
+
+      await runZonedGuarded(() async {
+        ResultOrHandledErrorReporter.setDefaultDebugErrorReporter();
+        ResultOr(() => throw Exception("TEST_ERR"));
+      }, (error, stack) {
+        caughtError = error;
+        caughtStack = stack;
+      });
+
+      expect(caughtError.toString(), equals('Exception: TEST_ERR'));
+      const labelPrefix = 'Caught by ResultOr';
+      expect(
+        caughtStack.toString().split('\n').first,
+        equals(labelPrefix),
+      );
+    });
+
+    test('setCustomHandledErrorReporter should call custom reporter once with correct args', () {
+      Object? seenError;
+      StackTrace? seenStack;
+
+      ResultOrHandledErrorReporter.setCustomHandledErrorReporter((e, s) {
+        seenError = e;
+        seenStack = s;
+      });
+
+      ResultOr(() => throw Exception("TEST_ERR"));
+      expect(seenError.toString(), equals('Exception: TEST_ERR'));
+      expect(seenStack, isNotNull);
     });
   });
 }

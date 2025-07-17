@@ -159,3 +159,44 @@ dependencies:
       print(result.data); // 'Valid: 5'
     }
 ```
+
+## Error Reporting with `ResultOrHandledErrorReporter`
+
+Errors thrown inside ResultOr will be automatically forwarded to static function. You can set custom or default reporter.
+
+By default reporter is empty, and no errors will be handled!
+
+You can plug in your own error handling function to integrate with logging services, analytics, or crash reporting SDKs, or simply print caught errors:
+
+```dart
+// Example: send to Sentry
+ResultOrHandledErrorReporter.setCustomHandledErrorReporter(
+  (Object error, StackTrace stack) {
+    Sentry.captureException(error, stackTrace: stack);
+  },
+);
+
+// Example: just print them
+ResultOrHandledErrorReporter.setCustomHandledErrorReporter(
+  (Object error, StackTrace stack) {
+    if (kDebugMode) {
+      print(e);
+      print(s);
+    }
+  },
+);
+```
+
+Or you can enable the default debug reporter during development:
+```dart
+if (kDebugMode) {
+  ResultOrHandledErrorReporter.setDefaultDebugErrorReporter();
+}
+```
+
+It will label errors with `"Caught by ResultOr"` and pass them into the current Zone without interrupting code, using `Zone.current.handleUncaughtError`.
+
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details. 

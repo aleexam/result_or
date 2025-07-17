@@ -91,12 +91,12 @@ extension ResultOrExt<T> on ResultOr<T> {
   }) {
     switch (this) {
       case ResultData(:final data):
-        var transformedData = transform(data);
-        var result = ResultData<U>(data: transformedData);
+        final transformedData = transform(data);
+        final result = ResultData<U>(data: transformedData);
         onSuccess?.call(transformedData);
         return result;
       case ResultError(:final error):
-        var result = ResultError<U>(error: error);
+        final result = ResultError<U>(error: error);
         onError?.call(error);
         return result;
     }

@@ -1,10 +1,8 @@
 import 'dart:async';
-
-import 'package:flutter/foundation.dart';
-
 import 'errors.dart';
 
 part "return_types.dart";
+part 'error_reporter.dart';
 
 /// BaseResultOr class. You can use it to define your own ResultOr, based on your own error types
 abstract class BaseResultOr<T, T2> {}
@@ -20,11 +18,12 @@ sealed class ResultOr<T> extends BaseResultOr<T, BaseResultError> {
     void Function(BaseResultError error)? onError,
   }) {
     try {
-      var result = ResultData<T>(data: func());
+      final result = ResultData<T>(data: func());
       onSuccess?.call(result.data);
       return result;
     } catch (e, s) {
-      var error = _mapThrown<T>(e, s);
+      final error = _mapThrown<T>(e, s);
+      ResultOrHandledErrorReporter._reportCaughtError(e, s);
       onError?.call(error.error);
       return error;
     }
@@ -37,11 +36,12 @@ sealed class ResultOr<T> extends BaseResultOr<T, BaseResultError> {
     void Function(BaseResultError error)? onError,
   }) async {
     try {
-      var result = ResultData<T>(data: await func());
+      final result = ResultData<T>(data: await func());
       onSuccess?.call(result.data);
       return result;
     } catch (e, s) {
-      var error = _mapThrown<T>(e, s);
+      final error = _mapThrown<T>(e, s);
+      ResultOrHandledErrorReporter._reportCaughtError(e, s);
       onError?.call(error.error);
       return error;
     }
@@ -54,39 +54,14 @@ sealed class ResultOr<T> extends BaseResultOr<T, BaseResultError> {
     }), (sink) => _ResultOrDuplicateSink(sink));
   }
 
-  static ResultError<T> _mapThrown<T>(e, s) {
-    if (e case BaseResultError()) {
-      var error = ResultError<T>(error: e);
-      if (kDebugMode) {
-        print(e);
-        print(s);
-      }
-      return error;
-    } else if (e case Exception()) {
-      var error =
-          ResultError<T>(error: NonFatalResultError(e.toString(), s, e));
-      if (kDebugMode) {
-        print(e);
-        print(s);
-      }
-      return error;
-    } else if (e case Error()) {
-      var error = ResultError<T>(error: FatalResultError(e.toString(), s, e));
-      if (kDebugMode) {
-        print(e);
-        print(s);
-      }
-      return error;
-    } else {
-      var error =
-          ResultError<T>(error: UnexpectedResultError(e.toString(), s, e));
-      if (kDebugMode) {
-        print(e);
-        print(s);
-      }
-      return error;
-    }
-  }
+  static ResultError<T> _mapThrown<T>(Object e, StackTrace? s) => ResultError<T>(
+    error: switch (e) {
+      BaseResultError err => err,
+      Exception ex => NonFatalResultError(ex.toString(), s, ex),
+      Error err => FatalResultError(err.toString(), s, err),
+      Object other => UnexpectedResultError(other.toString(), s, other),
+    },
+  );
 }
 
 class _ResultOrDuplicateSink<T> implements EventSink<ResultOr<T>> {
@@ -101,7 +76,8 @@ class _ResultOrDuplicateSink<T> implements EventSink<ResultOr<T>> {
 
   @override
   void addError(Object e, [StackTrace? s]) {
-    var error = ResultOr._mapThrown<T>(e, s);
+    final error = ResultOr._mapThrown<T>(e, s);
+    ResultOrHandledErrorReporter._reportCaughtError(e, s ?? StackTrace.current);
     _outputSink.add(error);
   }
 
