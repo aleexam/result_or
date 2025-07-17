@@ -272,24 +272,24 @@ void main() {
       expect(transformed.error.message, contains('fatal: some error'));
     });
 
-    // test('andThen should chain another ResultOr on success', () {
-    //   final result = ResultData<int>(data: 2).andThen((x) {
-    //     return ResultData<String>(data: 'OK $x');
-    //   });
-    //
-    //   expect(result, isA<ResultData<String>>());
-    //   expect((result as ResultData<String>).data, 'OK 2');
-    // });
+    test('andThen should chain another ResultOr on success', () {
+      final result = ResultData<int>(data: 2).andThen((x) {
+        return ResultData<String>(data: 'OK $x');
+      });
 
-    // test('andThen should short-circuit on error', () {
-    //   final result =
-    //       ResultError<int>(error: TestNonFatalError('fail')).andThen((x) {
-    //     return ResultData<String>(data: 'Should not run');
-    //   });
-    //
-    //   expect(result, isA<ResultError<String>>());
-    //   expect((result as ResultError<String>).error.message, 'fail');
-    // });
+      expect(result, isA<ResultData<String>>());
+      expect((result as ResultData<String>).data, 'OK 2');
+    });
+
+    test('andThen should short-circuit on error', () {
+      final result =
+          ResultError<int>(error: TestNonFatalError('fail')).andThen((x) {
+        return ResultData<String>(data: 'Should not run');
+      });
+
+      expect(result, isA<ResultError<String>>());
+      expect((result as ResultError<String>).error.message, 'fail');
+    });
 
     test('should handle sync function extensions', () {
       int successValue = 76;
@@ -470,23 +470,23 @@ void main() {
       expect((result as ResultError<void>).error.message, 'void error');
     });
 
-    // test('Nested map and andThen calls', () {
-    //   final result = ResultData<int>(data: 10).map((n) => n * 2).andThen((n) =>
-    //       n > 10
-    //           ? ResultData<String>(data: 'Big: $n')
-    //           : ResultError<String>(error: TestNonFatalError('Too small')));
-    //   expect(result, isA<ResultData<String>>());
-    //   expect((result as ResultData<String>).data, 'Big: 20');
-    // });
+    test('Nested map and andThen calls', () {
+      final result = ResultData<int>(data: 10).map((n) => n * 2).andThen((n) =>
+          n > 10
+              ? ResultData<String>(data: 'Big: $n')
+              : ResultError<String>(error: TestNonFatalError('Too small')));
+      expect(result, isA<ResultData<String>>());
+      expect((result as ResultData<String>).data, 'Big: 20');
+    });
 
-    // test('Nested map andThen returns error path', () {
-    //   final result = ResultData<int>(data: 3).map((n) => n * 2).andThen((n) =>
-    //       n > 10
-    //           ? ResultData<String>(data: 'Big: $n')
-    //           : ResultError<String>(error: TestNonFatalError('Too small')));
-    //   expect(result, isA<ResultError<String>>());
-    //   expect((result as ResultError<String>).error.message, 'Too small');
-    // });
+    test('Nested map andThen returns error path', () {
+      final result = ResultData<int>(data: 3).map((n) => n * 2).andThen((n) =>
+          n > 10
+              ? ResultData<String>(data: 'Big: $n')
+              : ResultError<String>(error: TestNonFatalError('Too small')));
+      expect(result, isA<ResultError<String>>());
+      expect((result as ResultError<String>).error.message, 'Too small');
+    });
 
     test('Nested ResultError inside ResultData', () async {
       Future<ResultOr<int>> nestedFailingFunction() async {

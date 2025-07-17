@@ -1,13 +1,14 @@
 # ResultOr
 
 Easy and safe error handling built on the `ResultOr` / `Either` pattern.  
+Skip writing a lot of boilerplate with error handling using this solution.
 Requires **Dart 3.0+**
 
 ## ✨ Features
 
 - Wrap any function (sync, async, or parameterized) or stream with `ResultOr()` or use `.resultOr()` extension.
 - Avoid uncaught exceptions – get a clear `ResultData` or `ResultError`.
-- Optional `onSuccess` and `onError` callbacks, when, map, andThen methods.
+- Optional `onSuccess` and `onError` callbacks, when, map, andThen, onSuccess/onError methods.
 - With ResultOr simply call your functions in bloc/store/etc, or anywhere else, wrapped in ResultOr()
 - Better than other similar solutions, because you don't need to return special data from every function and support corresponding logic. You only wrap at the end in one place 
 
@@ -24,20 +25,11 @@ dependencies:
 
 ```dart
     
-    // Simple function example
+    /// Simple function wrapping example
     var result = ResultOr(someFunction);
     // With extensions: var result = someFunction.resultOr();
     
-    // Callback function example
-    ResultOr(someFunction,
-        onSuccess: (data) {
-            print(data);
-        },
-        onError: (error) {
-          print(error.message);
-        }
-    );
-    // With extensions: var result = someFunction.resultOr(onSuccess, onError);
+    /// Handling examples
     
     // if example
     if (result case ResultWithData())  {
@@ -45,6 +37,23 @@ dependencies:
     } else if (result case ResultWithError()) {
       print(result.error.message);
     }
+
+    // When example
+    result.when(
+      (data) => print(data),
+      (error) => print(error)
+    );
+
+    // Callback example
+    ResultOr(someFunction,
+      onSuccess: (data) {
+        print(data);
+      },
+      onError: (error) {
+        print(error.message);
+      }
+    );
+    // With extensions: var result = someFunction.resultOr(onSuccess, onError);
     
     // Used sample function
     String someFunction() {
@@ -67,6 +76,7 @@ dependencies:
 ```dart
     // Future function example + switch/case
     var result2 = await ResultOr.async(someFutureFunction);
+    // With extensions: var result = await someFutureFunction().resultOr();
     
     switch (result2) {
       case ResultWithData(:final data):
@@ -78,26 +88,17 @@ dependencies:
     // Parametrized function example
     var result3 = ResultOr(() => someFunctionWithParam(2));
     
-    // Separate callbacks, same for onError
+    // Separate callbacks, same for onError. These callbacks can also return values
     result3.onSuccess((data) => print(data));
     
     // Parametrized future function example
-    var result4 = await ResultOr.async(() => someFutureFunctionWithParam("Param"));
+    var result4 = await someFutureFunctionWithParam("Param").resultOr();
     
     // When example
     result3.when(
       (data) => print(data), 
       (error) => print(error)
     );
-    
-    // Using extensions and async with params
-    var result6 = await (() => someFutureFunctionWithParam("param")).resultOr();
-    
-    if (result6 case ResultWithData())  {
-      print(result6.data);
-    } else if (result6 case ResultWithError()) {
-      print(result6.error.message);
-    }
 
 ```
 

@@ -45,14 +45,14 @@ extension ResultOrExt<T> on ResultOr<T> {
   ///
   /// - If this is a [ResultData], applies [transform] to its data and returns the result.
   /// - If this is a [ResultError], returns the same error wrapped in a new ResultError of type R.
-  /// ResultOr<R> andThen<R>(ResultOr<R> Function(T) transform) {
-  ///   switch (this) {
-  ///     case ResultData(:final data):
-  ///       return transform(data);
-  ///     case ResultError(:final error):
-  ///       return ResultError<R>(error: error);
-  ///   }
-  /// }
+  ResultOr<R> andThen<R>(ResultOr<R> Function(T) transform) {
+    switch (this) {
+      case ResultData(:final data):
+        return transform(data);
+      case ResultError(:final error):
+        return ResultError<R>(error: error);
+    }
+  }
 
   R when<R>(
     R Function(T data) whenSuccess,
