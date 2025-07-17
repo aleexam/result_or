@@ -1,8 +1,9 @@
 # ResultOr
 
-Easy and safe error handling built on the `ResultOr` / `Either` pattern.  
+Easy and safe error handling built on the `ResultOr` / `Either` pattern.<br>
 Skip writing a lot of boilerplate with error handling using this solution.
-Requires **Dart 3.0+**
+
+Pure dart package. Requires **Dart 3.0+**
 
 ## ✨ Features
 
