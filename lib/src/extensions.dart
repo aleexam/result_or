@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import '../result_or.dart';
 
 extension ResultOrFunctionExtSync<T> on T Function() {
@@ -12,13 +11,23 @@ extension ResultOrFunctionExtSync<T> on T Function() {
   }
 }
 
-extension ResultOrFunctionExtAsync<T> on Future<T> Function() {
+extension ResultOrFutureFunctionExtSync<T> on Future<T> Function() {
   /// Get resultOr from function itself (expected value or error object)
   Future<ResultOr<T>> resultOr({
     void Function(T data)? onSuccess,
     void Function(BaseResultError error)? onError,
   }) {
-    return ResultOr.async(this, onSuccess: onSuccess, onError: onError);
+    return ResultOr.async(() => this(), onSuccess: onSuccess, onError: onError);
+  }
+}
+
+extension ResultOrFunctionExtAsync<T> on Future<T> {
+  /// Get resultOr from function itself (expected value or error object)
+  Future<ResultOr<T>> resultOr({
+    void Function(T data)? onSuccess,
+    void Function(BaseResultError error)? onError,
+  }) {
+    return ResultOr.async(() => this, onSuccess: onSuccess, onError: onError);
   }
 }
 
@@ -36,14 +45,14 @@ extension ResultOrExt<T> on ResultOr<T> {
   ///
   /// - If this is a [ResultData], applies [transform] to its data and returns the result.
   /// - If this is a [ResultError], returns the same error wrapped in a new ResultError of type R.
-  ResultOr<R> andThen<R>(ResultOr<R> Function(T) transform) {
-    switch (this) {
-      case ResultData(:final data):
-        return transform(data);
-      case ResultError(:final error):
-        return ResultError<R>(error: error);
-    }
-  }
+  /// ResultOr<R> andThen<R>(ResultOr<R> Function(T) transform) {
+  ///   switch (this) {
+  ///     case ResultData(:final data):
+  ///       return transform(data);
+  ///     case ResultError(:final error):
+  ///       return ResultError<R>(error: error);
+  ///   }
+  /// }
 
   R when<R>(
     R Function(T data) whenSuccess,
@@ -57,28 +66,39 @@ extension ResultOrExt<T> on ResultOr<T> {
     }
   }
 
-  void onSuccess<R>(Function(T data) callback) {
+  R? onSuccess<R>(R Function(T data) callback) {
     if (this case ResultData<T>()) {
-      callback((this as ResultData<T>).data);
+      return callback((this as ResultData<T>).data);
     }
+    return null;
   }
 
-  void onError<R>(Function(BaseResultError error) callback) {
+  R? onError<R>(R Function(BaseResultError error) callback) {
     if (this case ResultError<T>()) {
-      callback((this as ResultError<T>).error);
+      return callback((this as ResultError<T>).error);
     }
+    return null;
   }
 
-  /// Maps the successful result data to a new type using [transform].
+  /// Get resultOr from function itself (expected value or error object)
+  /// and maps the successful result data to a new type using [transform].
   ///
   /// - If this is a [ResultData], applies [transform] to the data and wraps in a new ResultData.
   /// - If this is a [ResultError], returns the same error with the new type.
-  ResultOr<U> map<U>(U Function(T value) transform) {
+  ResultOr<U> map<U>(U Function(T value) transform, {
+    void Function(U data)? onSuccess,
+    void Function(BaseResultError error)? onError
+  }) {
     switch (this) {
       case ResultData(:final data):
-        return ResultData<U>(data: transform(data));
+        var transformedData = transform(data);
+        var result = ResultData<U>(data: transformedData);
+        onSuccess?.call(transformedData);
+        return result;
       case ResultError(:final error):
-        return ResultError<U>(error: error);
+        var result = ResultError<U>(error: error);
+        onError?.call(error);
+        return result;
     }
   }
 
